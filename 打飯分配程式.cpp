@@ -15,10 +15,12 @@ using namespace std;
 class aRow{
 public:
     vector<string> date;
-    vector<string> preDate;//the date of preparing meal
+    int numDate;//the date of preparing meal
     string name;
     string others;
-    aRow(string name, string others):name(name), others(others){}
+    aRow(string name, string others):name(name), others(others){
+        resetNumDate();
+    }
     void addDate(string );
     void setDateVector();
     void showRow(){// only for debugging
@@ -28,9 +30,12 @@ public:
         cout<<endl;
     }
     bool attend(string date);
+    void setNumDate(int num) {numDate += num;}
+    void resetNumDate(void) {numDate = 0;}
 };
 
 void setData(vector< aRow>&, vector<string>&);
+int nameForIndex(string, vector<aRow>);
 void writeOut(vector< aRow>& data, vector<string>& allDay);
 
 int main(){
@@ -73,11 +78,11 @@ void setData(vector< aRow>& data, vector<string>& allDay){
     ofstream out1, out2;
     char filename[100];
     string line, temp;
-    cout<<"½Ð¿é¤JÀÉ®×¦WºÙ(§t°ÆÀÉ¦W:.txt) : ";
+    cout<<"è«‹è¼¸å…¥æª”æ¡ˆåç¨±(å«å‰¯æª”å:.txt) : ";
     cin>>filename;
     file.open(filename, ifstream::in);
-    out1.open("¥´¶ºªí1.txt");
-    out2.open("¥´¶ºªí2.txt");
+    out1.open("æ‰“é£¯è¡¨1.txt");
+    out2.open("æ‰“é£¯è¡¨2.txt");
     if(file.is_open()){
         cout<<"Access to data...";
         cout<<endl;
@@ -104,24 +109,41 @@ void setData(vector< aRow>& data, vector<string>& allDay){
     data.erase(data.begin());
 }
 
+int nameForIndex(string name, vector<aRow> data){
+    for(int i = 0; i < data.size(); i++){
+        if(name == data[i].name) return i;
+    }
+    return -1;
+}
+
 void writeOut(vector< aRow>& data, vector<string>& allDay){
-    cout<<"¼gÀÉ®×¤¤..."<<endl;
+    cout<<"å¯«æª”æ¡ˆä¸­..."<<endl;
     ofstream out1, out2;
-    out1.open("¥´¶ºªí1.txt");
-    out2.open("¥´¶ºªí2.txt");
+    out1.open("æ‰“é£¯è¡¨1.txt");
+    out2.open("æ‰“é£¯è¡¨2.txt");
     vector< vector<string> > table;
-    for(int i = 0; i < allDay.size(); i++){
+    for(int i = 0; i < allDay.size(); i++){ //put all present people in list
         table.push_back(vector<string>());
         for(int j = 0; j < data.size(); j++){
             if(data[j].attend(allDay[i])){
                  table[i].push_back(data[j].name);
+                 data[j].setNumDate(1);
             }
         }
-        while(table[i].size() > People){
-            //cout<<"table[i] size is "<<table[i].size()<<endl;
-            int temp = rand()%(table[i].size());
-            //cout<<temp<<endl;
-            table[i].erase( table[i].begin()+ temp );
+        while(table[i].size() > People){    // if size()> People(const), then do deleting loop
+            int maxdays = 0;
+            int maxindex = 0;
+            for(int j = 0; j < table[i].size(); j++){
+                for(int k = 0; k < data.size(); k++){
+                    if(data[k].name == table[i][j] && data[k].numDate>maxdays){
+                        maxindex = j;
+                        maxdays = data[k].numDate;
+                    }
+                }
+            }
+            int tempind = nameForIndex(table[i][maxindex], data);
+            data[tempind].setNumDate(-1);
+            table[i].erase( table[i].begin()+ maxindex );
         }
     }
 
@@ -156,6 +178,6 @@ void writeOut(vector< aRow>& data, vector<string>& allDay){
 
     out1.close();
     out2.close();
-    cout<<"¼gÀÉ§¹¦¨!!!"<<endl;
+    cout<<"å¯«æª”å®Œæˆ!!!"<<endl;
     system("Pause");
 }
