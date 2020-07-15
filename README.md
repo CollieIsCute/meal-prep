@@ -1,4 +1,4 @@
-# club-meal-prep
+# meal-prep
  
    
 ## 這是一個自動排打飯人員的程式，使用方法如下：
