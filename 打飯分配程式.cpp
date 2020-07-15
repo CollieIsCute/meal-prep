@@ -44,6 +44,8 @@ int main(){
     vector<string> allDay;
     setData(data, allDay);
     writeOut(data, allDay);
+    data.clear();
+    allDay.clear();
 }
 
 void aRow::addDate(string newDate){
