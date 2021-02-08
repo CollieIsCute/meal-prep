@@ -1,7 +1,7 @@
 /*---------------------------------------
-creater: Meng-Shr,Tsai (46)
+Maker: Meng-Shr,Tsai (46)
 date:2020/7/9
-anyone can copy and modify this.
+modified date:2021/2/8
 ---------------------------------------*/
 #include<iostream>
 #include<stdio.h>
@@ -9,73 +9,72 @@ anyone can copy and modify this.
 #include<cstdlib>
 #include<vector>
 #include<fstream>
-#define People 3// number of people of preparing meals
+#define DAILY_WORKING_PEOPLE 3// number of people of preparing meals
 using namespace std;
 
-class aRow{
+class Person{
 public:
-    vector<string> date;
-    int numDate;//the date of preparing meal
+    vector<string> attendDates;
+    int workingDaysAmount;
     string name;
-    string others;
-    aRow(string name, string others):name(name), others(others){
-        resetNumDate();
+    string exceptName;
+    Person(string name, string others):name(name), exceptName(others){
+        workingDaysAmount = 0;
     }
-    void addDate(string );
-    void setDateVector();
-    void showRow(){// only for debugging
-        for(int i = 0; i < date.size(); i++){
-            cout<<date[i]<<" ";
+    void addAttendDate(string );
+    void buildAttendDates();
+    void showDetails(){// only for debugging
+        for(int i = 0; i < attendDates.size(); i++){
+            cout<<attendDates[i]<<" ";
         }
         cout<<endl;
     }
-    bool attend(string date);
-    void setNumDate(int num) {numDate += num;}
-    void resetNumDate(void) {numDate = 0;}
+    bool isAttended(string date);
+    void setNumDate(int num) {workingDaysAmount += num;}
 };
 
-void setData(vector< aRow>&, vector<string>&);
-int nameForIndex(string, vector<aRow>);
-void writeOut(vector< aRow>& data, vector<string>& allDay);
+void setData(vector< Person>&, vector<string>&);
+int nameForIndex(string, vector<Person>);
+void writeOut(vector< Person>& data, vector<string>& allDay);
 
 int main(){
     srand(time(NULL));
-    vector< aRow> data;
-    vector<string> allDay;
-    setData(data, allDay);
-    writeOut(data, allDay);
-    data.clear();
-    allDay.clear();
+    vector< Person> allPeople;
+    vector<string> wholeCampDates;
+    setData(allPeople, wholeCampDates);
+    writeOut(allPeople, wholeCampDates);
+    allPeople.clear();
+    wholeCampDates.clear();
 }
 
-void aRow::addDate(string newDate){
-    (*this).date.push_back(newDate);
+void Person::addAttendDate(string newDate){
+    (*this).attendDates.push_back(newDate);
 }
 
-void aRow::setDateVector(){
+void Person::buildAttendDates(){
     size_t now = 0;
-    while(now<others.size()){
-        if(others.find_first_of(" ,\t", now)-now == 0){
+    while(now<exceptName.size()){
+        if(exceptName.find_first_of(" ,\t", now)-now == 0){
             now++;
             continue;
         }
-        size_t next = others.find_first_of(" ,\t", now);
+        size_t next = exceptName.find_first_of(" ,\t", now);
         string temp;
-        temp = others.substr(now, next-now);
-        addDate(temp);
+        temp = exceptName.substr(now, next-now);
+        addAttendDate(temp);
         now = next;
     }
 }
 
-bool aRow::attend(string d){
+bool Person::isAttended(string d){
     bool flag = false;
-    for(int i = 0; i < date.size(); i++){
-        if(d == date[i]) flag = true;
+    for(int i = 0; i < attendDates.size(); i++){
+        if(d == attendDates[i]) flag = true;
     }
     return flag;
 }
 
-void setData(vector< aRow>& data, vector<string>& allDay){
+void setData(vector< Person>& allPeople, vector<string>& allDay){
     ifstream file;
     ofstream out1, out2;
     char filename[100];
@@ -98,27 +97,27 @@ void setData(vector< aRow>& data, vector<string>& allDay){
         getline(file, line);
         int pos = 0;
         pos = line.find_first_of(" \t", pos);
-        data.push_back(aRow(line.substr(0,pos-0), line.substr(pos)));
+        allPeople.push_back(Person(line.substr(0,pos-0), line.substr(pos)));
     }
     file.close();
 
-    for(int i = 0; i < data.size(); i++){
-        data[i].setDateVector();
+    for(int i = 0; i < allPeople.size(); i++){
+        allPeople[i].buildAttendDates();
     }
-    for(int i = 0; i < data[0].date.size(); i++){
-        allDay.push_back(data[0].date[i]);
+    for(int i = 0; i < allPeople[0].attendDates.size(); i++){
+        allDay.push_back(allPeople[0].attendDates[i]);
     }
-    data.erase(data.begin());
+    allPeople.erase(allPeople.begin());
 }
 
-int nameForIndex(string name, vector<aRow> data){
+int nameForIndex(string name, vector<Person> data){
     for(int i = 0; i < data.size(); i++){
         if(name == data[i].name) return i;
     }
     return -1;
 }
 
-void writeOut(vector< aRow>& data, vector<string>& allDay){
+void writeOut(vector< Person>& data, vector<string>& allDay){
     cout<<"寫檔案中..."<<endl;
     ofstream out1, out2;
     out1.open("打飯表1.txt");
@@ -127,19 +126,19 @@ void writeOut(vector< aRow>& data, vector<string>& allDay){
     for(int i = 0; i < allDay.size(); i++){ //put all present people in list
         table.push_back(vector<string>());
         for(int j = 0; j < data.size(); j++){
-            if(data[j].attend(allDay[i])){
+            if(data[j].isAttended(allDay[i])){
                  table[i].push_back(data[j].name);
                  data[j].setNumDate(1);
             }
         }
-        while(table[i].size() > People){    // if size()> People(const), then do deleting loop
+        while(table[i].size() > DAILY_WORKING_PEOPLE){    // if size()> People(const), then do deleting loop
             int maxdays = 0;
             int maxindex = 0;
             for(int j = 0; j < table[i].size(); j++){
                 for(int k = 0; k < data.size(); k++){
-                    if(data[k].name == table[i][j] && data[k].numDate>maxdays){
+                    if(data[k].name == table[i][j] && data[k].workingDaysAmount>maxdays){
                         maxindex = j;
-                        maxdays = data[k].numDate;
+                        maxdays = data[k].workingDaysAmount;
                     }
                 }
             }
@@ -158,7 +157,7 @@ void writeOut(vector< aRow>& data, vector<string>& allDay){
 
     for(int i = 0; i < allDay.size(); i++){
         out1<<allDay[i]<<"\t";
-        for(int j = 0; j < People; j++){
+        for(int j = 0; j < DAILY_WORKING_PEOPLE; j++){
             out1<<table[i][j]<<" ";
         }
         out1<<endl;
