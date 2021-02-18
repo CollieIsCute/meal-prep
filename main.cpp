@@ -20,12 +20,13 @@ typedef map< Today, class Group> DatesAndWorkingPeople;
 
 class Group{
 private:
-    vector<NameOfPerson> group;
+    vector<NameOfPerson> people;
+    int nameToGroupIndex(NameOfPerson name);
+    bool alreadyHas(NameOfPerson name);
 public:
     Group(){}
     void addPerson(NameOfPerson name);
     void delPerson(NameOfPerson name);
-    bool alreadyHas(NameOfPerson name);
 };
 
 class Calendar{
@@ -39,11 +40,32 @@ public:
     bool DateExisted(Today today);
 };
 
+void readFileAndSetCalendar(Calendar calendar);
+
 int main(){
 
 }
 
 void Group::addPerson(NameOfPerson name){
     if(!alreadyHas(name))
-        group.push_back(name);
+        people.push_back(name);
+}
+
+void Group::delPerson(NameOfPerson name){
+    if(alreadyHas(name)){
+        int del = nameToGroupIndex(name);
+        people.erase(del);
+    }
+}
+
+int Group::nameToGroupIndex(NameOfPerson name){
+    if(!alreadyHas(name)) return -1;
+    for(int i = 0; i < people.size(); i++)
+        if(people[i] == name) return i;
+}
+
+bool Group::alreadyHas(NameOfPerson name){
+    for(int i = 0; i < people.size(); i++)
+        if(people[i] == name) return true;
+    return false;
 }
