@@ -2,99 +2,92 @@
 Maker: Meng-Shr,Tsai (46)
 date:2020/7/9
 ---------------------------------------*/
-#include<iostream>
-#include<ctime>
-#include<cstdlib>
-#include<vector>
-#include<fstream>
-#include<map>
-#define DAILY_WORKING_PEOPLE 3// number of people of preparing meals
-using namespace std;
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include <vector>
+#include <fstream>
+#include <algorithm>
+#include <map>
+#include <list>
+ 
+using PersonName = std::string;
+using Today = std::string;
+using attendDates = std::vector<std::string>;
+using workingDates = std::vector<std::string>;
+using PeopleAndAttends = std::map<PersonName, attendDates>;
+using PeopleAndWorks = std::map<PersonName, workingDates>;
+using DatesAndWorkingPeople = std::map<Today, class Group>;
+const int DAILY_WORKING_PEOPLE = 3; // number of people of preparing meals
 
-typedef string NameOfPerson, Today;
-typedef vector<string> attendDates, workingDates;
-typedef map< NameOfPerson, attendDates> PeopleAndAttends;
-typedef map< NameOfPerson, workingDates> PeopleAndWorks;
-typedef map< Today, class Group> DatesAndWorkingPeople;
-
-class Group{
+class Group
+{
 private:
-    vector<NameOfPerson> people;
-    int nameToGroupIndex(NameOfPerson name);
-    bool alreadyHas(NameOfPerson name);
+    std::list<PersonName> people;
+
 public:
-    Group(){}
-    void addPerson(NameOfPerson name);
-    void delPerson(NameOfPerson name);
+    Group() = default;
+    void add(PersonName name);
+    void del(PersonName name);
 };
 
-class Calendar{
+class Calendar
+{
 private:
     DatesAndWorkingPeople datesPeople;
+
 public:
-    Calendar(){}
-    void addDateAndGroup(Today today, Group &group);
-    void delDateAndGroup(Today today, Group &group);
-    Group getGroupOfToday(Today today);
-    bool DateExisted(Today today);
+    Calendar() = default;
+    Calendar(std::ifstream ifs);
+    Calendar(Calendar &&_cal);
+    Calendar(std::string_view filename);
+    void erase(const Today &today);
+    Group &operator[](const Today &today);
+    const Group &operator[](const Today &today) const;
 };
 
-void readFileAndSetCalendar(Calendar &calendar);
-void setCalendar(ifstream &inputFile, Calendar &calendar);
-
-int main(){
-    Calendar cal;
-    readFileAndSetCalendar(cal);
+int main()
+{
+    Calendar cal("input.csv");
 }
 
-void readFileAndSetCalendar(Calendar &calendar){
-    ifstream inputfile;
-    string filename;
-    cout<<"Please input the file name:\n";
-    //cin>>filename;
-    filename="input.csv";
-    inputfile.open(filename);
-    if(inputfile.is_open())
-        cout<<"input file '"<<filename<<"' opened.\n";
-    else{
-        cout<<"input file '"<<filename<<"' open failed.\n";
-        exit(0);
-    }
-    setCalendar(inputfile, calendar);
+Calendar::Calendar(std::ifstream ifs) {
+    if(!ifs.is_open())
+        throw std::runtime_error("File could not open!");
+    
+    // Do what you want.
+    // Parse the csv?
 }
 
-void setCalendar(ifstream &inputfile, Calendar &Calendar){
-    cout<<"goto setCalendar\n";
-    string test;
-    ofstream outputFile;
-    outputFile.open("output.csv");
-    while(!inputfile.eof()){
-        inputfile>>test;
-        outputFile<<test<<",";
-        cout<<test<<",";
-    }
+Calendar::Calendar(std::string_view filename) : Calendar(std::ifstream(filename.data(), std::ifstream::in)) {
+    std::cout << "input file '" << filename << "' opened.\n";
 }
 
-void Group::addPerson(NameOfPerson name){
-    if(!alreadyHas(name))
+Calendar::Calendar(Calendar && _cal){
+    datesPeople.swap(_cal.datesPeople);
+}
+
+void Calendar::erase(const Today &today) {
+    datesPeople.erase(today);
+}
+
+Group &Calendar::operator[](const Today& today){
+    return datesPeople[today];
+}
+
+const Group &Calendar::operator[](const Today &today) const{
+    return datesPeople.at(today);
+}
+
+void Group::add(PersonName name)
+{
+    if (std::find(people.begin(), people.end(), name) == people.end())
         people.push_back(name);
 }
 
-void Group::delPerson(NameOfPerson name){
-    if(alreadyHas(name)){
-        int del = nameToGroupIndex(name);
-        people.erase(people.begin()+del);
-    }
-}
-
-int Group::nameToGroupIndex(NameOfPerson name){
-    if(!alreadyHas(name)) return -1;
-    for(int i = 0; i < people.size(); i++)
-        if(people[i] == name) return i;
-}
-
-bool Group::alreadyHas(NameOfPerson name){
-    for(int i = 0; i < people.size(); i++)
-        if(people[i] == name) return true;
-    return false;
+void Group::del(PersonName name)
+{
+    auto index = std::find(people.begin(), people.end(), name);
+    if (index != people.end())
+        people.erase(index);
 }
