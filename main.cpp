@@ -10,7 +10,7 @@ date:2020/7/9
 #include <algorithm>
 #include <map>
 #include <list>
- 
+
 using PersonName = std::string;
 using Today = std::string;
 using attendDates = std::vector<std::string>;
@@ -51,31 +51,37 @@ int main()
     Calendar cal("input.csv");
 }
 
-Calendar::Calendar(std::ifstream ifs) {
-    if(!ifs.is_open())
+Calendar::Calendar(std::ifstream ifs)
+{
+    if (!ifs.is_open())
         throw std::runtime_error("File could not open!");
-    
+
     // Do what you want.
     // Parse the csv?
 }
 
-Calendar::Calendar(std::string_view filename) : Calendar(std::ifstream(filename.data(), std::ifstream::in)) {
+Calendar::Calendar(std::string_view filename) : Calendar(std::ifstream(filename.data(), std::ifstream::in))
+{
     std::cout << "input file '" << filename << "' opened.\n";
 }
 
-Calendar::Calendar(Calendar && _cal){
+Calendar::Calendar(Calendar &&_cal)
+{
     datesPeople.swap(_cal.datesPeople);
 }
 
-void Calendar::erase(const Today &today) {
+void Calendar::erase(const Today &today)
+{
     datesPeople.erase(today);
 }
 
-Group &Calendar::operator[](const Today& today){
+Group &Calendar::operator[](const Today &today)
+{
     return datesPeople[today];
 }
 
-const Group &Calendar::operator[](const Today &today) const{
+const Group &Calendar::operator[](const Today &today) const
+{
     return datesPeople.at(today);
 }
 
