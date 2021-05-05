@@ -1,6 +1,6 @@
 all:
 	clang-format -style=file -i *.cpp *.h
-	g++ -o main.out -std=c++17 main.cpp
+	g++ -o main.out -std=c++17 main.cpp -lpthread
 exe:
 	./main.out
 clean:

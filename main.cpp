@@ -2,6 +2,7 @@
 Maker: Meng-Shr,Tsai (46)
 date:2020/7/9
 ---------------------------------------*/
+#include "csv.hpp"
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
@@ -57,13 +58,14 @@ Calendar::Calendar( std::ifstream ifs ) {
 	std::string name, rawDates;
 	workers w;
 	dates d;
+	std::string buff;
 	while ( getline( ifs, buff, ',' ) ) {
-		std::cout << buff << std::endl;
+		// std::cout << buff << std::endl;
 		w.push_back( buff );
 		getline( ifs, buff );
-		while () {
+		while ( 0 ) {
 		}
-		std::cout << buff << std::endl;
+		// std::cout << buff << std::endl;
 	}
 }
 
