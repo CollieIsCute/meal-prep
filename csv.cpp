@@ -1,6 +1,5 @@
 #include "csv.h"
 
-CSVReader::CSVReader() = default;
 CSVReader::CSVReader( std::string filename ) : fin( filename ) {
 	while ( !fin.eof() )
 		table.push_back( getParsedLine() );
@@ -29,6 +28,13 @@ std::vector< std::string > CSVReader::getParsedLine() {
 
 std::vector< std::string > CSVReader::getRow( int rowNum ) {
 	return table.at( rowNum );
+}
+
+std::vector< std::string > CSVReader::getCol( int colNum ) {
+	std::vector< std::string > ret;
+	for ( auto it : table )
+		ret.push_back( it.at( colNum ) );
+	return ret;
 }
 
 std::string CSVReader::getCell( int rowNum, int colNum ) {

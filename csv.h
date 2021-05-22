@@ -14,10 +14,20 @@ class CSVReader {
 	std::vector< std::string > getParsedLine();
 
 public:
-	CSVReader();
+	CSVReader() = default;
 	CSVReader( std::string filename );
 	std::vector< std::string > getRow( int rowNum );
+	std::vector< std::string > getCol( int colNum );
 	std::string getCell( int rowNum, int colNum );
+};
+
+class CSVWriter {
+	std::vector<std::vector<std::string> > table;
+	std::ofstream fout;
+
+public:
+	CSVWriter() = default;
+	CSVWriter( std::string_view filename );
 };
 
 #endif
