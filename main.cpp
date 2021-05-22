@@ -2,7 +2,7 @@
 Maker: Meng-Shr,Tsai (46)
 date:2020/7/9
 ---------------------------------------*/
-#include "csv.hpp"
+#include "csv.h"
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
@@ -47,7 +47,7 @@ public:
 };
 
 int main() {
-	Calendar cal( "input.csv" );
+	CSVReader c( "input.csv" );
 }
 
 Calendar::Calendar( std::ifstream ifs ) {
