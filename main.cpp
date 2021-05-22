@@ -18,8 +18,6 @@ using worker = std::string;
 using workers = std::vector< std::string >;
 using date = std::string;
 using dates = std::vector< std::string >;
-using workerDates = std::map< worker, dates >;
-using datesGroup = std::map< date, class Group >;
 const int DAILY_WORKING_PEOPLE = 3;
 
 class Group {
@@ -34,11 +32,10 @@ public:
 
 class Calendar {
 private:
-	datesGroup datesPeople;
+	std::map< date, class Group > datesPeople;
 
 public:
 	Calendar() = default;
-	Calendar( std::ifstream ifs );
 	Calendar( Calendar&& _cal );
 	Calendar( std::string_view filename );
 	void erase( const date& d );
@@ -50,26 +47,9 @@ int main() {
 	CSVReader c( "input.csv" );
 }
 
-Calendar::Calendar( std::ifstream ifs ) {
-	if ( !ifs.is_open() )
-		throw std::runtime_error( "File could not open!" );
-	else
-		std::cout << "input file opened.\n";
-	std::string name, rawDates;
-	workers w;
-	dates d;
-	std::string buff;
-	while ( getline( ifs, buff, ',' ) ) {
-		// std::cout << buff << std::endl;
-		w.push_back( buff );
-		getline( ifs, buff );
-		while ( 0 ) {
-		}
-		// std::cout << buff << std::endl;
-	}
+Calendar::Calendar( std::string_view filename ) {
+	CSVReader r;
 }
-
-Calendar::Calendar( std::string_view filename ) : Calendar( std::ifstream( filename.data(), std::ifstream::in ) ) {}
 
 Calendar::Calendar( Calendar&& _cal ) {
 	datesPeople.swap( _cal.datesPeople );
