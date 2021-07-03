@@ -14,11 +14,13 @@ class CSVReader {
 	std::vector< std::string > getParsedLine();
 
 public:
-	CSVReader() = default;
+	CSVReader() = delete;
 	CSVReader( std::string filename );
 	std::vector< std::string > getRow( int rowNum );
 	std::vector< std::string > getCol( int colNum );
 	std::string getCell( int rowNum, int colNum );
+	int getRowNum();
+	int getColNum( int&& rowNum );
 };
 
 class CSVWriter {
@@ -27,7 +29,7 @@ class CSVWriter {
 	std::string produceLine( const std::vector< std::string >& row );
 
 public:
-	CSVWriter() = default;
+	CSVWriter() = delete;
 	CSVWriter( const std::string& filename );
 	void setRow( const int& rowNum, const std::vector< std::string >& row );  // setting functions only modify table, not write files.
 	void setCol( const int& colNum, const std::vector< std::string >& col );

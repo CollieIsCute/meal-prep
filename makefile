@@ -1,6 +1,7 @@
-all:
-	clang-format -style=file -i *.cpp *.h
+all: format	
 	g++ -o main.out -std=c++17 main.cpp csv.cpp
+format:
+	clang-format -style=file -i *.cpp *.h
 exe:
 	./main.out
 clean:

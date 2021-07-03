@@ -41,6 +41,14 @@ std::string CSVReader::getCell( int rowNum, int colNum ) {
 	return table.at( rowNum ).at( colNum );
 }
 
+int CSVReader::getRowNum(){
+	return table.size();
+}
+
+int CSVReader::getColNum(int&& rowNum){
+	return table.at( rowNum ).size();
+}
+
 CSVWriter::CSVWriter( const std::string& filename ) : fout( filename ) {}
 
 void CSVWriter::setRow( const int& rowNum, const std::vector< std::string >& row ) {
