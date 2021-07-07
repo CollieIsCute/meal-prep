@@ -1,11 +1,17 @@
-#include <algorithm>
 #include <iostream>
-#include <string>
-#include <vector>
+
 using namespace std;
 
-int main() {
-	string s = "123\n123";
-	bool f = (find(s.begin(), s.end(), '\n') != s.end());
-	cout << f;
+class C {
+public:
+	int c;
+};
+
+int main(void) {
+	C a;
+	a.c = 28;
+	C b(a);
+	a.c = 15;
+	cout << b.c << endl;
+	return 0;
 }
