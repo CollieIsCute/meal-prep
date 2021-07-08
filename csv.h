@@ -30,10 +30,12 @@ class CSVWriter {
 public:
 	CSVWriter() = delete;
 	CSVWriter(const std::string& filename);
-	void setRow(const int& rowNum,
-				const std::vector<std::string>& row);  // setting functions only modify table, not write files.
-	void setCol(const int& colNum, const std::vector<std::string>& col);
-	void setCell(const int& rowNum, const int& colNum, const std::string& content);
+	// setters and pushers only modify table, not write files.
+	void pushRow(const std::vector<std::string>& row);
+	void setRow(const int rowNum, const std::vector<std::string>& row);
+	void setCol(const int colNum, const std::vector<std::string>& col);
+	void pushCell(const int rowNum, std::string content);
+	void setCell(const int rowNum, const int colNum, const std::string content);
 	void writeFile();
 };
 

@@ -54,13 +54,20 @@ int CSVReader::getColNum(int rowNum) {
 
 CSVWriter::CSVWriter(const std::string& filename) : fout(filename) {}
 
-void CSVWriter::setRow(const int& rowNum, const std::vector<std::string>& row) {
+void CSVWriter::pushRow(const std::vector<std::string>& row) {
+	table.push_back(std::vector<std::string>());
+	std::vector<std::string>& thisRow = table.at(table.size() - 1);
+	for(auto& content : row)
+		thisRow.push_back(content);
+}
+
+void CSVWriter::setRow(const int rowNum, const std::vector<std::string>& row) {
 	table.at(rowNum).clear();
 	for(auto& it : row)
 		table.at(rowNum).push_back(it);
 }
 
-void CSVWriter::setCol(const int& colNum, const std::vector<std::string>& col) {
+void CSVWriter::setCol(const int colNum, const std::vector<std::string>& col) {
 	if(col.size() != table.size())
 		throw std::invalid_argument("CSVWriter: argument size is not equal to CSVWriter::table.");
 	for(int i = 0; i < table.size(); i++) {
@@ -68,7 +75,11 @@ void CSVWriter::setCol(const int& colNum, const std::vector<std::string>& col) {
 	}
 }
 
-void CSVWriter::setCell(const int& rowNum, const int& colNum, const std::string& content) {
+void CSVWriter::pushCell(const int rowNum, std::string content) {
+	table.at(rowNum).push_back(content);
+}
+
+void CSVWriter::setCell(const int rowNum, const int colNum, const std::string content) {
 	table.at(rowNum).at(colNum) = content;
 }
 
