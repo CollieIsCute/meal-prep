@@ -114,7 +114,7 @@ void Calendar::reducePeopleToLimit(const int limit) {
 
 void Calendar::writeFiles(std::string filename1, std::string filename2) {
 	CSVWriter nameAndDates(filename1), dateAndNames(filename2);
-
+	// TODO :拆分兩個for loop 為 function "gen_peopleDates()" 之類的，或用 lamda
 	for(auto& row : peopleDates) {
 		std::vector<std::string> rowForWrite;
 		rowForWrite.push_back(row.first);
