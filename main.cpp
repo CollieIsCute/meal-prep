@@ -14,6 +14,8 @@ using person = std::string;
 using people = std::vector<person>;
 using date = std::string;
 using dates = std::vector<date>;
+
+// TODO 將常數變成透過 IO 輸入，更彈性
 const int DAILY_WORKING_PEOPLE = 3;
 const int NAME = 1, DATE = 6;
 
@@ -22,6 +24,8 @@ class Calendar {
 	std::map<person, dates> peopleDates;
 	std::string removeCharEverywhere(std::string s, char target);
 	std::string makeMonthAndDateTwoDigits(std::string date);
+	void writeMap(std::string filename,
+				  const std::map<std::string, std::vector<std::string>>& datesPeopleOrPeopleDates);
 
 public:
 	Calendar() = default;
@@ -113,25 +117,23 @@ void Calendar::reducePeopleToLimit(const int limit) {
 }
 
 void Calendar::writeFiles(std::string filename1, std::string filename2) {
-	CSVWriter nameAndDates(filename1), dateAndNames(filename2);
-	// TODO :拆分兩個for loop 為 function "gen_peopleDates()" 之類的，或用 lamda
-	for(auto& row : peopleDates) {
-		std::vector<std::string> rowForWrite;
-		rowForWrite.push_back(row.first);
-		for(auto& date : row.second)
-			rowForWrite.push_back(date);
-		nameAndDates.pushRow(rowForWrite);
-	}
-	nameAndDates.writeFile();
+	writeMap(filename1, datesPeople);
+	writeMap(filename2, peopleDates);
+}
 
-	for(auto& row : datesPeople) {
+void Calendar::writeMap(std::string filename,
+						const std::map<std::string, std::vector<std::string>>& datesPeopleOrPeopleDates) {
+	CSVWriter fileWriter(filename);
+	auto& table = datesPeopleOrPeopleDates;
+
+	for(const auto& row : table) {
 		std::vector<std::string> rowForWrite;
 		rowForWrite.push_back(row.first);
-		for(auto& date : row.second)
-			rowForWrite.push_back(date);
-		dateAndNames.pushRow(rowForWrite);
+		for(const auto& value : row.second)
+			rowForWrite.push_back(value);
+		fileWriter.pushRow(rowForWrite);
 	}
-	dateAndNames.writeFile();
+	fileWriter.writeFile();
 }
 
 void Calendar::print() {
