@@ -15,10 +15,6 @@ using people = std::vector<person>;
 using date = std::string;
 using dates = std::vector<date>;
 
-// TODO 將常數變成透過 IO 輸入，更彈性
-const int DAILY_WORKING_PEOPLE = 3;
-const int NAME = 1, DATE = 6;
-
 class Calendar {
 	std::map<date, people> datesPeople;
 	std::map<person, dates> peopleDates;
@@ -34,13 +30,23 @@ public:
 	void updatePeopleDates(const std::string& name, std::string rawDates);
 	void updateDatesPeopleFromPeopleDates();
 	void updatePeopleDatesFromDatesPeople();
-	void reducePeopleToLimit(const int limit);
+	void reducePeopleToLimit();
+	int getSomeoneDatesNum(std::string name);
+	int getSomedatePersonNum(std::string date);
 	void writeFiles(std::string filename1, std::string filename2);
-	void print();
 };
 
+int prompForInputInt(std::string msg);
+std::string prompForInputString(std::string msg);
+
+const int DAILY_WORKING_PEOPLE = prompForInputInt("請輸入每日值日生數量： ");
+const int NAME = prompForInputInt("請輸入姓名所在的欄數（從最左欄訂為0開始數）： ");
+const int DATE = prompForInputInt("請輸入日期所在的欄數（從最左欄訂為0開始數）： ");
+
+// TODO 可能是讀 csv 檔頭的問題
+// TODO 移除重複填寫的資料
 int main() {
-	CSVReader reader("input.csv");
+	CSVReader reader(prompForInputString("請輸入檔案名稱： "));
 	Calendar attendCal;
 	std::string tempDate;
 
@@ -49,7 +55,7 @@ int main() {
 	attendCal.updateDatesPeopleFromPeopleDates();
 
 	Calendar workCal(attendCal);
-	workCal.reducePeopleToLimit(DAILY_WORKING_PEOPLE);
+	workCal.reducePeopleToLimit();
 
 	workCal.writeFiles("work1.csv", "work2.csv");
 	attendCal.writeFiles("attend1.csv", "attend2.csv");
@@ -103,17 +109,34 @@ void Calendar::updatePeopleDatesFromDatesPeople() {
 			peopleDates[name].push_back(element.first);
 }
 
-void Calendar::reducePeopleToLimit(const int limit) {
-	// TODO 儘量讓每個人工作的天數一樣多
+void Calendar::reducePeopleToLimit() {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	for(auto& element : datesPeople) {
-		dates& dates = element.second;
-		while(dates.size() > limit) {
-			dates.erase(dates.begin() + gen() % dates.size());
+		people& people = element.second;
+		while(people.size() > DAILY_WORKING_PEOPLE) {
+			int delIndex = gen() % people.size();
+			for(int i = 0; i < people.size(); i++)
+				if(getSomeoneDatesNum(people.at(i)) > getSomeoneDatesNum(people.at(delIndex)))
+					delIndex = i;
+			people.erase(people.begin() + delIndex);
+			updatePeopleDatesFromDatesPeople();
 		}
 	}
-	updatePeopleDatesFromDatesPeople();
+}
+
+int Calendar::getSomeoneDatesNum(std::string name) {
+	for(const auto& elem : peopleDates)
+		if(elem.first == name)
+			return elem.second.size();
+	throw std::overflow_error("not find in peopleDates!");
+}
+
+int Calendar::getSomedatePersonNum(std::string date) {
+	for(const auto& elem : datesPeople)
+		if(elem.first == date)
+			return elem.second.size();
+	throw std::overflow_error("not find in datesPeople!");
 }
 
 void Calendar::writeFiles(std::string filename1, std::string filename2) {
@@ -136,23 +159,16 @@ void Calendar::writeMap(std::string filename,
 	fileWriter.writeFile();
 }
 
-void Calendar::print() {
+int prompForInputInt(std::string msg) {
+	int ret;
+	std::cout << msg;
+	std::cin >> ret;
+	return ret;
+}
 
-	// for debugging
-
-	/*for(auto& element : peopleDates) { //uncomment, and It can be called to show peopleDates
-		std::cout << element.first << " ";
-		for(auto& date : element.second) {
-			std::cout << date << " ";
-		}
-		std::cout << std::endl;
-	}*/
-
-	/*for(auto& element : datesPeople) { //uncomment, and It can be called to show datesPeople
-		std::cout << element.first << " ";
-		for(auto& name : element.second) {
-			std::cout << name << " ";
-		}
-		std::cout << std::endl;
-	}*/
+std::string prompForInputString(std::string msg) {
+	std::string ret;
+	std::cout << msg;
+	std::cin >> ret;
+	return ret;
 }
