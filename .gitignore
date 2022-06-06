@@ -1,6 +1,4 @@
-work*
-attend*
 main
-output.csv
-input*.csv
+*.csv
 .vscode
+!example.csv
