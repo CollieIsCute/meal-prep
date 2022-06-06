@@ -1,5 +1,5 @@
 all:
-	g++ -o main -std=c++20 main.cpp CSV-header/csv.cpp
+	g++ -o main -std=c++20 main.cpp CSV-header/csv.cpp calendar.cpp
 format:
 	clang-format -style=file -i *.cpp *.h
 exe:
