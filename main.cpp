@@ -29,17 +29,15 @@ int main() {
 	const int date = prompForInputInt("請輸入日期所在的欄數（從最左欄訂為0開始數）： ");
 	CSVReader reader(produceNewInputFile());
 	Calendar attendCal;
-	for(int i = 1; i < reader.getRowNum(); i++){
-		std::cout << "test\n";
+	for(int i = 1; i < reader.getRowNum(); i++)
 		attendCal.updatePeopleDates(reader.getCell(i, name), reader.getCell(i, date));
-		std::cout << "complete\n";
-	}
 	attendCal.updateDatesPeopleFromPeopleDates();
 
 	Calendar workCal(attendCal);
 	workCal.reducePeopleToLimit(daily_working_people);
 	workCal.writeFiles("work1.csv", "work2.csv");
 	attendCal.writeFiles("attend1.csv", "attend2.csv");
+	std::cout << "檔案已建立" << std::endl;
 }
 
 static int prompForInputInt(std::string msg) {
